@@ -31,6 +31,7 @@ struct AppRow: View {
 struct Applist: View {
     @State var apps: [Applicaiton]
     @State var classNames: [ClassName]?
+    var application = Application()
     
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
@@ -40,12 +41,13 @@ struct Applist: View {
                     .onTapGesture {
                         classNames?.removeAll()
                         USBDeviceManager.shared.attach(bundleid: app.bundleid) { session in
-                            Class().classes(handle: { success, result in
-                                if success {
-                                    classNames = result
-                                }
-                            })
-//                            HookUIPasteboard()
+//                            Class().classes(handle: { success, result in
+//                                if success {
+//                                    classNames = result
+//                                }
+//                            })
+                            application.application()
+                            StartHook()
                         }
                     }
             }

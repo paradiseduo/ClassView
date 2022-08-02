@@ -76,8 +76,8 @@ class USBDeviceManager {
         }
     }
     
-    func add(_ hook: Hook) {
+    static func add(_ hook: Hook) {
         hook.hook()
-        self.hooks.append(hook)
+        USBDeviceManager.shared.hooks.append(hook)
     }
 }
