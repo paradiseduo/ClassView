@@ -33,7 +33,7 @@ class Hook: ScriptDelegate {
     func script(_ script: Script, didReceiveMessage message: Any, withData data: Data?) {
         if let dic = message as? NSDictionary {
             if let p = dic["payload"] as? String {
-                let body = Body(hook: self, stack: p)
+                let body = Body(name: name, label: label, level: level, weight: weight, stack: p)
                 print(body)
             }
         }
@@ -91,6 +91,126 @@ class Hook: ScriptDelegate {
                 """
             }
             session.createScript(s, name: "Hook", runtime: ScriptRuntime.auto) { scriptResult in
+                do {
+                    self.script = try scriptResult()
+                    self.script?.delegate = self
+                    self.script?.load() { result in
+                        do {
+                            if try result() {
+                                print("Script \(self.className) \(self.methodName) loaded")
+                            } else {
+                                print("Script \(self.className) \(self.methodName) loaded failed")
+                            }
+                        } catch let e {
+                            print(e)
+                        }
+                    }
+                } catch let e {
+                    print(e)
+                }
+            }
+        } else {
+            print("USBDeviceManager.shared.session not found")
+        }
+    }
+}
+
+class HookArgs: ScriptDelegate {
+    public typealias HookResult = (_ className: String, _ methodName: String, _ callStack: String, _ args: [String]) -> Void
+    
+    private var script: Script?
+    let className: String
+    let methodName: String
+    private var handle: HookResult
+    
+    init(className: String, methodName: String, resultHandle: @escaping HookResult) {
+        self.className = className
+        self.methodName = methodName
+        self.handle = resultHandle
+    }
+
+    func scriptDestroyed(_ script: Script) {
+        print("\(script) scriptDestroyed")
+    }
+
+    func script(_ script: Script, didReceiveMessage message: Any, withData data: Data?) {
+        if let dic = message as? NSDictionary {
+            if let p = dic["payload"] as? String {
+                let arr = p.components(separatedBy: "&")
+                self.handle(self.className, self.methodName, arr.first ?? "", (arr.last ?? "").components(separatedBy: "*").filter({ s in
+                    return s != ""
+                }))
+            }
+        }
+    }
+    
+    func hook() {
+        if let session = USBDeviceManager.shared.session {
+            var s = """
+            function hook_class_method(class_name, method_name)
+            {
+                var hook = ObjC.classes[class_name][method_name];
+                Interceptor.attach(hook.implementation, {
+                    onEnter: function(args) {
+                        const { NSString } = ObjC.classes;
+                        var str = NSString.stringWithString_("%@");
+                        var array = str["- componentsSeparatedByString:"](":");
+                        var count = array.count().valueOf();
+                        var result = "&";
+                        for (var i = 0; i < count-1; i++)
+                        {
+                            result = result + "*" + ObjC.Object(args[2+i]).toString();
+                        }
+                        console.log(ObjC.classes.NSThread['+ callStackSymbols']().toString() + result);
+                    }
+                });
+            }
+
+            function run_hook_all_methods_of_specific_class(className_arg)
+            {
+                var className = className_arg;
+                var methods = ObjC.classes[className].$ownMethods;
+                for (var i = 0; i < methods.length; i++)
+                {
+                    var className2 = className;
+                    var funcName2 = methods[i];
+                    hook_class_method(className2, funcName2);
+                }
+            }
+
+            function hook_all_methods_of_specific_class(className_arg)
+            {
+                setImmediate(run_hook_all_methods_of_specific_class,[className_arg])
+            }
+
+            hook_all_methods_of_specific_class("\(className)")
+            """
+            if methodName.count > 0 {
+                s = """
+                function hook_specific_method_of_class(class_name, method_name)
+                {
+                    var hook = ObjC.classes[class_name][method_name];
+                    Interceptor.attach(hook.implementation, {
+                        onEnter: function(args) {
+                            const { NSString } = ObjC.classes;
+                            var str = NSString.stringWithString_("%@");
+                            var array = str["- componentsSeparatedByString:"](":");
+                            var count = array.count().valueOf();
+                            var result = "&";
+                            for (var i = 0; i < count-1; i++)
+                            {
+                                result = result + "*" + ObjC.Object(args[2+i]).toString();
+                            }
+                            console.log(ObjC.classes.NSThread['+ callStackSymbols']().toString() + result);
+                        }
+                    });
+                }
+
+                hook_specific_method_of_class("\(className)", "\(methodName)")
+                """
+                s = String(format: s, methodName)
+            }
+            session.createScript(s, name: "HookReturn", runtime: ScriptRuntime.auto) { scriptResult in
                 do {
                     self.script = try scriptResult()
                     self.script?.delegate = self

@@ -8,12 +8,14 @@
 import Foundation
 import Frida
 
-class USBDeviceManager {
+class USBDeviceManager: SessionDelegate {
+    
     static let shared = USBDeviceManager()
     private let manager = DeviceManager()
     var device: Device?
     var session: Session?
-    private var hooks = [Hook]()
+    private var hooks: [Hook] = []
+    private var hookReturns: [HookArgs] = []
     var pid: UInt = 0
     
     func deviceManager() -> DeviceManager {
@@ -58,6 +60,7 @@ class USBDeviceManager {
                     device.attach(to: pid, realm: .native) { result in
                         do {
                             let session = try result()
+                            session.delegate = self
                             USBDeviceManager.shared.session = session
                             handle(session)
                         } catch {
@@ -76,8 +79,17 @@ class USBDeviceManager {
         }
     }
     
+    func session(_ session: Session, didDetach reason: SessionDetachReason, crash: CrashDetails?) {
+        print(reason)
+    }
+    
     static func add(_ hook: Hook) {
         hook.hook()
         USBDeviceManager.shared.hooks.append(hook)
+    }
+    
+    static func add(_ hook: HookArgs) {
+        hook.hook()
+        USBDeviceManager.shared.hookReturns.append(hook)
     }
 }

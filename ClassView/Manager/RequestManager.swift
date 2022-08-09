@@ -7,8 +7,8 @@
 
 import Foundation
 
-func Body(hook: Hook, stack: String) -> [String: String] {
-    var body = ["name": hook.name, "label": hook.label, "level": hook.level, "weight": hook.weight]
+func Body(name: String, label: String, level: String, weight: String, stack: String) -> [String: String] {
+    var body = ["name": name, "label": label, "level": level, "weight": weight]
     let arr = stack.components(separatedBy: "\n").dropFirst().dropLast()
     var resultStack = ""
     for (index, item) in arr.enumerated() {
