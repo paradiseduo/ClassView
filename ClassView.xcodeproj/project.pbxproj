@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		844B545B28A2852300539C02 /* AppDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844B545A28A2852300539C02 /* AppDataManager.swift */; };
 		845D076A288FDFB800205CA1 /* Frida.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 845D0768288FDFB500205CA1 /* Frida.framework */; };
 		845D076B288FDFB800205CA1 /* Frida.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 845D0768288FDFB500205CA1 /* Frida.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		845D076D28910DAC00205CA1 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845D076C28910DAC00205CA1 /* Application.swift */; };
@@ -41,6 +42,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		844B545A28A2852300539C02 /* AppDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDataManager.swift; sourceTree = "<group>"; };
 		845D0768288FDFB500205CA1 /* Frida.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Frida.framework; sourceTree = "<group>"; };
 		845D076C28910DAC00205CA1 /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
 		845D076E28910E6600205CA1 /* USBDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USBDeviceManager.swift; sourceTree = "<group>"; };
@@ -133,6 +135,7 @@
 				84D9225B2897E6AB007A51D8 /* HookManager.swift */,
 				84D9225D2897E784007A51D8 /* RequestManager.swift */,
 				845D076E28910E6600205CA1 /* USBDeviceManager.swift */,
+				844B545A28A2852300539C02 /* AppDataManager.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -209,6 +212,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				845D076D28910DAC00205CA1 /* Application.swift in Sources */,
+				844B545B28A2852300539C02 /* AppDataManager.swift in Sources */,
 				845D07772893DB2500205CA1 /* MethoedScript.swift in Sources */,
 				845D076F28910E6600205CA1 /* USBDeviceManager.swift in Sources */,
 				84D9225E2897E784007A51D8 /* RequestManager.swift in Sources */,

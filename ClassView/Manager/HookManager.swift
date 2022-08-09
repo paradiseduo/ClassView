@@ -7,6 +7,7 @@
 
 import Foundation
 import AVFoundation
+import EventKit
 
 let SENSITIVE = "1"
 let GENERAL = "0"
@@ -28,6 +29,7 @@ func StartHook() {
     HookCTCarrier()
     HookCTTelephonyNetworkInfo()
     HookAVCaptureDevice()
+    HookEKEventStore()
 }
 
 func HookUIPasteboard() {
@@ -150,18 +152,46 @@ func HookCTTelephonyNetworkInfo() {
 }
 
 func HookAVCaptureDevice() {
-    USBDeviceManager.add(HookArgs(className: "AVCaptureDevice", methodName: "+ authorizationStatusForMediaType:", resultHandle: { className, methodName, callStack, args in
-        print(args)
+    USBDeviceManager.add(HookArgs(className: "AVCaptureDevice", methodName: "+ authorizationStatusForMediaType:", resultHandle: { className, methodName, callStack, background, args in
         for item in args {
             if item == AVMediaType.video.rawValue {
-                print(Body(name: "获取麦克风权限", label: "获取麦克风权限", level: SENSITIVE, weight: "2", stack: callStack))
+                SendPermissionReport(name: "获取麦克风权限", label: "获取麦克风权限", level: SENSITIVE, weight: "2", stack: callStack, background: background)
                 break
             } else if item == AVMediaType.audio.rawValue {
-                print(Body(name: "获取相机权限", label: "获取相机权限", level: SENSITIVE, weight: "2", stack: callStack))
+                SendPermissionReport(name: "获取相机权限", label: "获取相机权限", level: SENSITIVE, weight: "2", stack: callStack, background: background)
                 break
             } else {
-                print(Body(name: "获取媒体权限\(item)", label: "获取媒体库权限", level: GENERAL, weight: "100", stack: callStack))
+                SendPermissionReport(name: "获取媒体权限\(item)", label: "获取媒体库权限", level: GENERAL, weight: "100", stack: callStack, background: background)
                 break
+            }
+        }
+    }))
+}
+
+func HookEKEventStore() {
+    USBDeviceManager.add(HookArgs(className: "EKEventStore", methodName: "+ authorizationStatusForEntityType:", resultHandle: { className, methodName, callStack, background, args in
+        for item in args {
+            if let i = Int(item) {
+                if i == EKEntityType.event.rawValue {
+                    SendPermissionReport(name: "获取日历权限", label: "获取日历权限", level: SENSITIVE, weight: "10", stack: callStack, background: background)
+                    break
+                } else if i == EKEntityType.reminder.rawValue {
+                    SendPermissionReport(name: "获取备忘录权限", label: "获取备忘录权限", level: SENSITIVE, weight: "10", stack: callStack, background: background)
+                    break
+                }
+            }
+        }
+    }))
+    USBDeviceManager.add(HookArgs(className: "EKEventStore", methodName: "- requestAccessToEntityType:completion:", resultHandle: { className, methodName, callStack, background, args in
+        for item in args {
+            if let i = Int(item) {
+                if i == EKEntityType.event.rawValue {
+                    SendPermissionReport(name: "读取日历", label: "获取日历权限", level: SENSITIVE, weight: "10", stack: callStack, background: background)
+                    break
+                } else if i == EKEntityType.reminder.rawValue {
+                    SendPermissionReport(name: "读取备忘录", label: "获取备忘录权限", level: SENSITIVE, weight: "10", stack: callStack, background: background)
+                    break
+                }
             }
         }
     }))

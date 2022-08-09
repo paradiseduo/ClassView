@@ -33,8 +33,12 @@ class Hook: ScriptDelegate {
     func script(_ script: Script, didReceiveMessage message: Any, withData data: Data?) {
         if let dic = message as? NSDictionary {
             if let p = dic["payload"] as? String {
-                let body = Body(name: name, label: label, level: level, weight: weight, stack: p)
-                print(body)
+                let arr = p.components(separatedBy: "&")
+                var background = "1"
+                if let b = arr.last, b == "0" {
+                    background = b
+                }
+                SendPermissionReport(name: name, label: label, level: level, weight: weight, stack: arr.first ?? "", background: background)
             }
         }
     }
@@ -51,7 +55,12 @@ class Hook: ScriptDelegate {
                 var hook = ObjC.classes[class_name][method_name];
                 Interceptor.attach(hook.implementation, {
                     onEnter: function(args) {
-                        console.log(ObjC.classes.NSThread['+ callStackSymbols']().toString());
+                       var stack = ObjC.classes.NSThread['+ callStackSymbols']().toString();
+                       ObjC.schedule(ObjC.mainQueue, function () {
+                           const { UIApplication } = ObjC.classes;
+                           var status = UIApplication.sharedApplication().applicationState();
+                           console.log(stack + "&" + status);
+                       });
                     }
                 });
             }
@@ -82,7 +91,12 @@ class Hook: ScriptDelegate {
                     var hook = ObjC.classes[class_name][method_name];
                     Interceptor.attach(hook.implementation, {
                         onEnter: function(args) {
-                            console.log(ObjC.classes.NSThread['+ callStackSymbols']().toString());
+                            var stack = ObjC.classes.NSThread['+ callStackSymbols']().toString();
+                            ObjC.schedule(ObjC.mainQueue, function () {
+                                const { UIApplication } = ObjC.classes;
+                                var status = UIApplication.sharedApplication().applicationState();
+                                console.log(stack + "&" + status);
+                            });
                         }
                     });
                 }
@@ -116,7 +130,7 @@ class Hook: ScriptDelegate {
 }
 
 class HookArgs: ScriptDelegate {
-    public typealias HookResult = (_ className: String, _ methodName: String, _ callStack: String, _ args: [String]) -> Void
+    public typealias HookResult = (_ className: String, _ methodName: String, _ callStack: String, _ background: String, _ args: [String]) -> Void
     
     private var script: Script?
     let className: String
@@ -137,7 +151,11 @@ class HookArgs: ScriptDelegate {
         if let dic = message as? NSDictionary {
             if let p = dic["payload"] as? String {
                 let arr = p.components(separatedBy: "&")
-                self.handle(self.className, self.methodName, arr.first ?? "", (arr.last ?? "").components(separatedBy: "*").filter({ s in
+                var background = "1"
+                if arr[1] == "0" {
+                    background = arr[1]
+                }
+                self.handle(self.className, self.methodName, arr.first ?? "", background, (arr.last ?? "").components(separatedBy: "*").filter({ s in
                     return s != ""
                 }))
             }
@@ -161,7 +179,12 @@ class HookArgs: ScriptDelegate {
                         {
                             result = result + "*" + ObjC.Object(args[2+i]).toString();
                         }
-                        console.log(ObjC.classes.NSThread['+ callStackSymbols']().toString() + result);
+                        var stack = ObjC.classes.NSThread['+ callStackSymbols']().toString();
+                        ObjC.schedule(ObjC.mainQueue, function () {
+                            const { UIApplication } = ObjC.classes;
+                            var status = UIApplication.sharedApplication().applicationState();
+                            console.log(stack + "&" + status + result);
+                        });
                     }
                 });
             }
@@ -201,15 +224,20 @@ class HookArgs: ScriptDelegate {
                             {
                                 result = result + "*" + ObjC.Object(args[2+i]).toString();
                             }
-                            console.log(ObjC.classes.NSThread['+ callStackSymbols']().toString() + result);
+                            var stack = ObjC.classes.NSThread['+ callStackSymbols']().toString();
+                            ObjC.schedule(ObjC.mainQueue, function () {
+                                const { UIApplication } = ObjC.classes;
+                                var status = UIApplication.sharedApplication().applicationState();
+                                console.log(stack + "&" + status + result);
+                            });
                         }
                     });
                 }
 
                 hook_specific_method_of_class("\(className)", "\(methodName)")
                 """
-                s = String(format: s, methodName)
             }
+            s = String(format: s, methodName)
             session.createScript(s, name: "HookReturn", runtime: ScriptRuntime.auto) { scriptResult in
                 do {
                     self.script = try scriptResult()

@@ -18,7 +18,16 @@ class Application: ScriptDelegate {
     func script(_ script: Script, didReceiveMessage message: Any, withData data: Data?) {
         if let dic = message as? NSDictionary {
             if let p = dic["payload"] as? String {
-                print(p)
+                let arr = p.components(separatedBy: "&")
+                AppDataManager.shared.target = arr[0]
+                AppDataManager.shared.appName = arr[1]
+                AppDataManager.shared.build = arr[2]
+                AppDataManager.shared.version = arr[3]
+                AppDataManager.shared.name = arr[4]
+                AppDataManager.shared.udid = arr[5]
+                AppDataManager.shared.idfv = arr[6]
+                AppDataManager.shared.idfa = arr[7]
+                SendDeviceInfo()
             }
         }
     }
@@ -78,12 +87,15 @@ class Application: ScriptDelegate {
                 }
                 return null;
             }
-
             
-            console.log(infoLookup("CFBundleName"));
-            console.log(infoLookup("CFBundleDisplayName"));
-            console.log(infoLookup("CFBundleVersion"));
-            console.log(infoLookup("CFBundleShortVersionString"));
+            const { UIDevice } = ObjC.classes;
+            const { NSUUID } = ObjC.classes;
+            const { ASIdentifierManager } = ObjC.classes;
+            var name = UIDevice.currentDevice().name();
+            var uuid = NSUUID.UUID().UUIDString();
+            var idfv = UIDevice.currentDevice().identifierForVendor().UUIDString();
+            var idfa = ASIdentifierManager.sharedManager().advertisingIdentifier().UUIDString();
+            console.log(infoLookup("CFBundleName") + "&" + infoLookup("CFBundleDisplayName") + "&" + infoLookup("CFBundleVersion") + "&" + infoLookup("CFBundleShortVersionString") + "&" + name + "&" + uuid + "&" + idfv + "&" + idfa);
             """
             session.createScript(s, name: "Application", runtime: ScriptRuntime.auto) { scriptResult in
                 do {
