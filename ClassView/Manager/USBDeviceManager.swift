@@ -81,6 +81,9 @@ class USBDeviceManager: SessionDelegate {
     
     func session(_ session: Session, didDetach reason: SessionDetachReason, crash: CrashDetails?) {
         print(reason)
+        if let cc = crash {
+            print(cc.description)
+        }
     }
     
     static func add(_ hook: Hook) {

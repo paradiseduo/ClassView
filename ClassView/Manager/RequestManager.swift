@@ -28,6 +28,11 @@ func Body(name: String, label: String, level: String, weight: String, stack: Str
 //            if let c = swift_demangle(funcName) {
 //                print(c)
 //            }
+            if subString.count > 36 {
+                if let _ = UUID(uuidString: subString[..<36]) {
+                    continue
+                }
+            }
             resultStack += "\(index) \(subString)\n"
             if body["abstract"] == nil {
                 body["abstract"] = subString

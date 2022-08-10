@@ -30,6 +30,7 @@ func StartHook() {
     HookCTTelephonyNetworkInfo()
     HookAVCaptureDevice()
     HookEKEventStore()
+    HookHKHealthStore()
 }
 
 func HookUIPasteboard() {
@@ -193,6 +194,33 @@ func HookEKEventStore() {
                     break
                 }
             }
+        }
+    }))
+}
+
+func HookHKHealthStore() {
+    USBDeviceManager.add(HookArgs(className: "HKHealthStore", methodName: "- authorizationStatusForType:", resultHandle: { className, methodName, callStack, background, args in
+        for item in args {
+            if item.hasPrefix("HKQuantityTypeIdentifier") {
+                let s = item.replacingOccurrences(of: "HKQuantityTypeIdentifier", with: "")
+                SendPermissionReport(name: "获取\(s)权限", label: "HealthKit权限", level: SENSITIVE, weight: "2", stack: callStack, background: background)
+            }
+        }
+    }))
+    
+    USBDeviceManager.add(HookArgs(className: "HKHealthStore", methodName: "- requestAuthorizationToShareTypes:readTypes:completion:", resultHandle: { className, methodName, callStack, background, args in
+        for item in args {
+            if item.hasPrefix("Share ") {
+                SendPermissionReport(name: "申请\(item.replacingOccurrences(of: "Share ", with: ""))写入权限", label: "申请HealthKit写入权限", level: SENSITIVE, weight: "2", stack: callStack, background: background)
+            } else if item.hasPrefix("Read ") {
+                SendPermissionReport(name: "申请\(item.replacingOccurrences(of: "Read ", with: ""))读取权限", label: "申请HealthKit读取权限", level: SENSITIVE, weight: "2", stack: callStack, background: background)
+            }
+        }
+    }))
+    
+    USBDeviceManager.add(HookArgs(className: "HKHealthStore", methodName: "- executeQuery:", resultHandle: { className, methodName, callStack, background, args in
+        for item in args {
+            SendPermissionReport(name: "读取\(item)", label: "HealthKit读数据", level: SENSITIVE, weight: "2", stack: callStack, background: background)
         }
     }))
 }

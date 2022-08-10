@@ -25,6 +25,7 @@
 		84D9225C2897E6AB007A51D8 /* HookManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D9225B2897E6AB007A51D8 /* HookManager.swift */; };
 		84D9225E2897E784007A51D8 /* RequestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D9225D2897E784007A51D8 /* RequestManager.swift */; };
 		84D922622897FC74007A51D8 /* ApplicationInfoScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D922612897FC74007A51D8 /* ApplicationInfoScript.swift */; };
+		84EF779F28A3A7B300678BC9 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EF779E28A3A7B300678BC9 /* Extension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -61,6 +62,7 @@
 		84D9225B2897E6AB007A51D8 /* HookManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookManager.swift; sourceTree = "<group>"; };
 		84D9225D2897E784007A51D8 /* RequestManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestManager.swift; sourceTree = "<group>"; };
 		84D922612897FC74007A51D8 /* ApplicationInfoScript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationInfoScript.swift; sourceTree = "<group>"; };
+		84EF779E28A3A7B300678BC9 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +96,7 @@
 		847849F227BE8107005643A7 /* ClassView */ = {
 			isa = PBXGroup;
 			children = (
+				84EF779D28A3A7A300678BC9 /* Extension */,
 				84D922642897FCA4007A51D8 /* Manager */,
 				84D922632897FC8E007A51D8 /* Script */,
 				847849FC27BE8109005643A7 /* ClassView.entitlements */,
@@ -138,6 +141,14 @@
 				844B545A28A2852300539C02 /* AppDataManager.swift */,
 			);
 			path = Manager;
+			sourceTree = "<group>";
+		};
+		84EF779D28A3A7A300678BC9 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				84EF779E28A3A7B300678BC9 /* Extension.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -211,6 +222,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84EF779F28A3A7B300678BC9 /* Extension.swift in Sources */,
 				845D076D28910DAC00205CA1 /* Application.swift in Sources */,
 				844B545B28A2852300539C02 /* AppDataManager.swift in Sources */,
 				845D07772893DB2500205CA1 /* MethoedScript.swift in Sources */,

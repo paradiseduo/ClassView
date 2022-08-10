@@ -208,36 +208,96 @@ class HookArgs: ScriptDelegate {
 
             hook_all_methods_of_specific_class("\(className)")
             """
+            s = String(format: s, methodName)
             if methodName.count > 0 {
-                s = """
-                function hook_specific_method_of_class(class_name, method_name)
-                {
-                    var hook = ObjC.classes[class_name][method_name];
-                    Interceptor.attach(hook.implementation, {
-                        onEnter: function(args) {
-                            const { NSString } = ObjC.classes;
-                            var str = NSString.stringWithString_("%@");
-                            var array = str["- componentsSeparatedByString:"](":");
-                            var count = array.count().valueOf();
-                            var result = "&";
-                            for (var i = 0; i < count-1; i++)
-                            {
-                                result = result + "*" + ObjC.Object(args[2+i]).toString();
-                            }
-                            var stack = ObjC.classes.NSThread['+ callStackSymbols']().toString();
-                            ObjC.schedule(ObjC.mainQueue, function () {
+                if methodName == "- requestAuthorizationToShareTypes:readTypes:completion:" && className == "HKHealthStore" {
+                    s = """
+                    function hook_specific_method_of_class(class_name, method_name)
+                    {
+                        var hook = ObjC.classes[class_name][method_name];
+                        Interceptor.attach(hook.implementation, {
+                            onEnter: function(args) {
                                 const { UIApplication } = ObjC.classes;
                                 var status = UIApplication.sharedApplication().applicationState();
-                                console.log(stack + "&" + status + result);
-                            });
-                        }
-                    });
-                }
+                                var stack = ObjC.classes.NSThread['+ callStackSymbols']().toString();
+                                
+                                var shareSet = new ObjC.Object(args[2]);
+                                var shareArr = shareSet.allObjects();
+                                var count1 = shareArr.count().valueOf();
+                                for (var i = 0; i < count1; i++)
+                                {
+                                    var str = ObjC.Object(shareArr.objectAtIndex_(i));
+                                    var str1 = str.identifier()["- stringByReplacingOccurrencesOfString:withString:"]("HKQuantityTypeIdentifier", "");
+                                    console.log(stack + "&" + status + "&" + "Share " + str1);
+                                }
+                                
+                                var readSet = new ObjC.Object(args[3]);
+                                var readArr = readSet.allObjects();
+                                var count2 = readArr.count().valueOf();
+                                for (var i = 0; i < count2; i++)
+                                {
+                                    var str = ObjC.Object(readArr.objectAtIndex_(i));
+                                    var str1 = str.identifier()["- stringByReplacingOccurrencesOfString:withString:"]("HKQuantityTypeIdentifier", "");
+                                    console.log(stack + "&" + status + "&" + "Read " + str1);
+                                }
+                            }
+                        });
+                    }
 
-                hook_specific_method_of_class("\(className)", "\(methodName)")
-                """
+                    hook_specific_method_of_class("\(className)", "\(methodName)")
+                    """
+                } else if methodName == "- executeQuery:" && className == "HKHealthStore" {
+                    s = """
+                    function hook_specific_method_of_class(class_name, method_name)
+                    {
+                        var hook = ObjC.classes[class_name][method_name];
+                        Interceptor.attach(hook.implementation, {
+                            onEnter: function(args) {
+                                var stack = ObjC.classes.NSThread['+ callStackSymbols']().toString();
+                                var query = new ObjC.Object(args[2]);
+                                ObjC.schedule(ObjC.mainQueue, function () {
+                                    const { UIApplication } = ObjC.classes;
+                                    var status = UIApplication.sharedApplication().applicationState();
+                                    var iden = query.objectType().identifier()["- stringByReplacingOccurrencesOfString:withString:"]("HKQuantityTypeIdentifier", "");
+                                    console.log(stack + "&" + status + "&" + iden);
+                                });
+                            }
+                        });
+                    }
+
+                    hook_specific_method_of_class("\(className)", "\(methodName)")
+                    """
+                } else {
+                    s = """
+                    function hook_specific_method_of_class(class_name, method_name)
+                    {
+                        var hook = ObjC.classes[class_name][method_name];
+                        Interceptor.attach(hook.implementation, {
+                            onEnter: function(args) {
+                                const { NSString } = ObjC.classes;
+                                var str = NSString.stringWithString_("%@");
+                                var array = str["- componentsSeparatedByString:"](":");
+                                var count = array.count().valueOf();
+                                var result = "&";
+                                for (var i = 0; i < count-1; i++)
+                                {
+                                    result = result + "*" + ObjC.Object(args[2+i]).toString();
+                                }
+                                var stack = ObjC.classes.NSThread['+ callStackSymbols']().toString();
+                                ObjC.schedule(ObjC.mainQueue, function () {
+                                    const { UIApplication } = ObjC.classes;
+                                    var status = UIApplication.sharedApplication().applicationState();
+                                    console.log(stack + "&" + status + result);
+                                });
+                            }
+                        });
+                    }
+
+                    hook_specific_method_of_class("\(className)", "\(methodName)")
+                    """
+                    s = String(format: s, methodName)
+                }
             }
-            s = String(format: s, methodName)
             session.createScript(s, name: "HookReturn", runtime: ScriptRuntime.auto) { scriptResult in
                 do {
                     self.script = try scriptResult()
