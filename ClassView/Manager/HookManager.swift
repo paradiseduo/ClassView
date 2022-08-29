@@ -31,6 +31,16 @@ func StartHook() {
     HookAVCaptureDevice()
     HookEKEventStore()
     HookHKHealthStore()
+    HookHMHomeManager()
+    HookLAContext()
+    HookNEHotspotNetwork()
+    HookNSProcessInfo()
+    HookSFSpeechRecognizer()
+    HookSKCloudServiceController()
+    HookUIApplication()
+    HookUIDevice()
+    HookUIImagePickerController()
+    HookUIImpactFeedbackGenerator()
 }
 
 func HookUIPasteboard() {
@@ -162,7 +172,7 @@ func HookAVCaptureDevice() {
                 SendPermissionReport(name: "获取相机权限", label: "获取相机权限", level: SENSITIVE, weight: "2", stack: callStack, background: background)
                 break
             } else {
-                SendPermissionReport(name: "获取媒体权限\(item)", label: "获取媒体库权限", level: GENERAL, weight: "100", stack: callStack, background: background)
+                SendPermissionReport(name: "获取媒体权限\(item)", label: "获取媒体库权限", level: SENSITIVE, weight: "2", stack: callStack, background: background)
                 break
             }
         }
@@ -223,4 +233,92 @@ func HookHKHealthStore() {
             SendPermissionReport(name: "读取\(item)", label: "HealthKit读数据", level: SENSITIVE, weight: "2", stack: callStack, background: background)
         }
     }))
+}
+
+func HookHMHomeManager() {
+    USBDeviceManager.add(Hook(className: "HMHomeManager", methodName: "- homes", name: "获取Homes", label: "使用HomeKit", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "HMHomeManager", methodName: "- authorizationStatus", name: "使用HomeKit", label: "使用HomeKit", level: GENERAL, weight: "100"))
+}
+
+func HookLAContext() {
+    USBDeviceManager.add(Hook(className: "LAContext", methodName: "- canEvaluatePolicy:error:", name: "使用FaceID", label: "使用FaceID", level: SENSITIVE, weight: "1"))
+}
+
+func HookNEHotspotNetwork() {
+    USBDeviceManager.add(Hook(className: "NEHotspotNetwork", methodName: "- SSID", name: "获取SSID", label: "获取WiFi名称", level: SENSITIVE, weight: "2"))
+    USBDeviceManager.add(Hook(className: "NEHotspotNetwork", methodName: "- BSSID", name: "获取BSSID", label: "获取Wifi的mac地址", level: SENSITIVE, weight: "2"))
+    USBDeviceManager.add(Hook(className: "NEHotspotNetwork", methodName: "+ fetchCurrentWithCompletionHandler:", name: "取Wifi信息", label: "取Wifi信息", level: SENSITIVE, weight: "2"))
+}
+
+
+func HookNSProcessInfo() {
+    USBDeviceManager.add(Hook(className: "NSProcessInfo", methodName: "- environment", name: "NSProcessInfo environment", label: "获取当前环境变量", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "NSProcessInfo", methodName: "- arguments", name: "NSProcessInfo arguments", label: "获取当前运行参数", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "NSProcessInfo", methodName: "- hostName", name: "NSProcessInfo hostName", label: "获取本机hostname", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "NSProcessInfo", methodName: "- processName", name: "NSProcessInfo processName", label: "获取进程名", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "NSProcessInfo", methodName: "- processIdentifier", name: "NSProcessInfo processIdentifier", label: "获取进程pid", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "NSProcessInfo", methodName: "- globallyUniqueString", name: "NSProcessInfo globallyUniqueString", label: "获取全局唯一标识符", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "NSProcessInfo", methodName: "- operatingSystemVersionString", name: "NSProcessInfo operatingSystemVersionString", label: "获取详细系统版本", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "NSProcessInfo", methodName: "- processorCount", name: "NSProcessInfo processorCount", label: "获取进程数", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "NSProcessInfo", methodName: "- operatingSystemVersion", name: "NSProcessInfo operatingSystemVersion", label: "获取详细系统版本", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "NSProcessInfo", methodName: "- activeProcessorCount", name: "NSProcessInfo activeProcessorCount", label: "获取活跃进程数", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "NSProcessInfo", methodName: "- physicalMemory", name: "NSProcessInfo physicalMemory", label: "获取物理内存大小", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "NSProcessInfo", methodName: "- systemUptime", name: "NSProcessInfo systemUptime", label: "获取设备启动时间", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "NSProcessInfo", methodName: "- thermalState", name: "NSProcessInfo thermalState", label: "获取系统状态", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "NSProcessInfo", methodName: "- lowPowerModeEnabled", name: "NSProcessInfo lowPowerModeEnabled", label: "获取低电量模式状态", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "NSProcessInfo", methodName: "- macCatalystApp", name: "NSProcessInfo macCatalystApp", label: "获取能否在Mac上运行", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "NSProcessInfo", methodName: "- iOSAppOnMac", name: "NSProcessInfo iOSAppOnMac", label: "获取能否在Mac上运行", level: GENERAL, weight: "100"))
+}
+
+func HookSFSpeechRecognizer() {
+    USBDeviceManager.add(Hook(className: "SFSpeechRecognizer", methodName: "+ authorizationStatus", name: "语音识别权限", label: "语音识别权限", level: GENERAL, weight: "100"))
+}
+
+func HookSKCloudServiceController() {
+    USBDeviceManager.add(Hook(className: "SKCloudServiceController", methodName: "+ authorizationStatus", name: "获取媒体库权限", label: "获取媒体库权限", level: GENERAL, weight: "100"))
+}
+
+func HookUIApplication() {
+    USBDeviceManager.add(Hook(className: "UIApplication", methodName: "- beginBackgroundTaskWithExpirationHandler:", name: "创建后台任务", label: "后台任务", level: SENSITIVE, weight: "5"))
+    USBDeviceManager.add(HookArgs(className: "UIApplication", methodName: "- beginBackgroundTaskWithName:expirationHandler:", resultHandle: { className, methodName, callStack, background, args in
+        for (index, item) in args.enumerated() {
+            if index == 0 {
+                SendPermissionReport(name: item, label: "后台任务", level: SENSITIVE, weight: "5", stack: callStack, background: background)
+            }
+        }
+    }))
+    USBDeviceManager.add(Hook(className: "UIApplication", methodName: "- endBackgroundTask:", name: "结束后台任务", label: "后台任务", level: SENSITIVE, weight: "5"))
+}
+
+func HookUIDevice() {
+    USBDeviceManager.add(Hook(className: "UIDevice", methodName: "- name", name: "UIDevice name", label: "获取设备名称", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "UIDevice", methodName: "- model", name: "UIDevice model", label: "获取设备型号", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "UIDevice", methodName: "- localizedModel", name: "UIDevice localizedModel", label: "获取设备型号", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "UIDevice", methodName: "- systemName", name: "UIDevice systemName", label: "获取系统名称", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "UIDevice", methodName: "- systemVersion", name: "UIDevice systemVersion", label: "获取系统版本", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "UIDevice", methodName: "- identifierForVendor", name: "UIDevice IDFV", label: "获取设备IDFV", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "UIDevice", methodName: "- orientation", name: "UIDevice orientation", label: "获取手机屏幕方向", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "UIDevice", methodName: "- batteryLevel", name: "UIDevice batteryLevel", label: "获取电量", level: GENERAL, weight: "100"))
+    USBDeviceManager.add(Hook(className: "UIDevice", methodName: "- batteryState", name: "UIDevice batteryState", label: "获取电池状态", level: GENERAL, weight: "100"))
+}
+
+func HookUIImagePickerController() {
+    USBDeviceManager.add(Hook(className: "UIImagePickerController", methodName: "- init", name: "初始化系统相册", label: "获取相册权限", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(HookArgs(className: "UIImagePickerController", methodName: "- isSourceTypeAvailable:", resultHandle: { className, methodName, callStack, background, args in
+        for item in args {
+            if let e = Int(item) {
+                if e == 0 {
+                    SendPermissionReport(name: "获取系统相册读取权限", label: "获取相册权限", level: SENSITIVE, weight: "10", stack: callStack, background: background)
+                } else if e == 1 {
+                    SendPermissionReport(name: "获取系统相机权限", label: "获取相机权限", level: SENSITIVE, weight: "10", stack: callStack, background: background)
+                } else if e == 2 {
+                    SendPermissionReport(name: "获取系统相册存储权限", label: "获取相册权限", level: SENSITIVE, weight: "10", stack: callStack, background: background)
+                }
+            }
+        }
+    }))
+}
+
+func HookUIImpactFeedbackGenerator() {
+    USBDeviceManager.add(Hook(className: "UIImpactFeedbackGenerator", methodName: "- impactOccurred", name: "震动反馈", label: "震动反馈", level: GENERAL, weight: "100"))
 }
