@@ -7,7 +7,7 @@
 
 import Foundation
 
-let LocalAddress = "http://127.0.0.1:10086"
+let LocalAddress = ""
 let TestAddress = ""
 let ReleaseAddress = ""
 
@@ -15,33 +15,38 @@ let Address = LocalAddress
 
 func Body(name: String, label: String, level: String, weight: String, stack: String) -> [String: String] {
     var body = ["name": name, "label": label, "level": level, "weight": weight]
-    let arr = stack.components(separatedBy: "\n").dropFirst().dropLast()
-    var resultStack = ""
-    for (index, item) in arr.enumerated() {
-        if item.contains("???") {
-            continue
-        }
-        let s = item.components(separatedBy: "0x")
-        if let ss = s.last {
-            let subString = String(ss[ss.index(ss.startIndex, offsetBy: 17)..<ss.endIndex])
-//            let funcName = subString.components(separatedBy: " + ").first!
-//            if let c = swift_demangle(funcName) {
-//                print(c)
-//            }
-            if subString.count > 36 {
-                if let _ = UUID(uuidString: subString[..<36]) {
-                    continue
+    if stack.hasPrefix("(") {
+        let arr = stack.components(separatedBy: "\n").dropFirst().dropLast()
+        var resultStack = ""
+        for (index, item) in arr.enumerated() {
+            if item.contains("???") {
+                continue
+            }
+            let s = item.components(separatedBy: "0x")
+            if let ss = s.last {
+                let subString = String(ss[ss.index(ss.startIndex, offsetBy: 17)..<ss.endIndex])
+    //            let funcName = subString.components(separatedBy: " + ").first!
+    //            if let c = swift_demangle(funcName) {
+    //                print(c)
+    //            }
+                if subString.count > 36 {
+                    if let _ = UUID(uuidString: subString[..<36]) {
+                        continue
+                    }
                 }
+                resultStack += "\(index) \(subString)\n"
+                if body["abstract"] == nil {
+                    body["abstract"] = subString
+                }
+            } else {
+                continue
             }
-            resultStack += "\(index) \(subString)\n"
-            if body["abstract"] == nil {
-                body["abstract"] = subString
-            }
-        } else {
-            continue
         }
+        body["stack"] = resultStack
+    } else if stack.hasPrefix("-") {
+        body["stack"] = stack
+        body["abstract"] = stack
     }
-    body["stack"] = resultStack
     return body
 }
 
@@ -53,16 +58,7 @@ func SendPermissionReport(name: String, label: String, level: String, weight: St
     body["udid"] = AppDataManager.shared.udid
     body["background"] = background
     
-    do {
-        var request = URLRequest(url: URL(string: "\(Address)/ios")!)
-        request.httpMethod = "POST"
-        request.httpBody = try JSONSerialization.data(withJSONObject: ["datas": [body]], options: JSONSerialization.WritingOptions.sortedKeys)
-        URLSession.shared.dataTask(with: request) { data, response, err in
-
-        }.resume()
-    } catch let err {
-        print(err)
-    }
+    print(body)
 }
 
 func SendDeviceInfo() {
@@ -78,14 +74,5 @@ func SendDeviceInfo() {
         "app": AppDataManager.shared.appName
     ]
     
-    do {
-        var request = URLRequest(url: URL(string: "\(Address)/device/upload")!)
-        request.httpMethod = "POST"
-        request.httpBody = try JSONSerialization.data(withJSONObject: body, options: JSONSerialization.WritingOptions.sortedKeys)
-        URLSession.shared.dataTask(with: request) { data, response, err in
-            
-        }.resume()
-    } catch let err {
-        print(err)
-    }
+    print(body)
 }
