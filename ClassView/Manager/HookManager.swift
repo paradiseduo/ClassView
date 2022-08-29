@@ -42,6 +42,11 @@ func StartHook() {
     HookUIImagePickerController()
     HookUIImpactFeedbackGenerator()
     HookCNContactPickerViewController()
+    HookPHAsset()
+    HookPHAssetCollection()
+    HookPHCollectionList()
+    HookPHImageManager()
+    HookPHPhotoLibrary()
 }
 
 func HookUIPasteboard() {
@@ -102,6 +107,7 @@ func HookCLLocationManager() {
     USBDeviceManager.add(Hook(className: "CLLocationManager", methodName: "- requestLocation", name: "获取一次位置信息", label: "使用位置信息", level: SENSITIVE, weight: "4"))
     USBDeviceManager.add(Hook(className: "CLLocationManager", methodName: "- requestTemporaryFullAccuracyAuthorizationWithPurposeKey:completion:", name: "申请一次精确定位1", label: "使用位置信息", level: SENSITIVE, weight: "4"))
     USBDeviceManager.add(Hook(className: "CLLocationManager", methodName: "- requestTemporaryFullAccuracyAuthorizationWithPurposeKey:", name: "申请一次精确定位2", label: "使用位置信息", level: SENSITIVE, weight: "4"))
+    USBDeviceManager.add(HookDelegate(methodName: "-[* locationManager:didUpdateLocations:]", name: "更新位置信息", label: "使用位置信息", level: SENSITIVE, weight: "4"))
 }
 
 func HookCMMotionActivityManager() {
@@ -329,4 +335,51 @@ func HookCNContactPickerViewController() {
     USBDeviceManager.add(HookDelegate(methodName: "-[* contactPicker:didSelectContacts:]", name: "使用系统通讯录界面2", label: "获取通讯录权限", level: SENSITIVE, weight: "8"))
     USBDeviceManager.add(HookDelegate(methodName: "-[* contactPicker:didSelectContactProperty:]", name: "使用系统通讯录界面3", label: "获取通讯录权限", level: SENSITIVE, weight: "8"))
     USBDeviceManager.add(HookDelegate(methodName: "-[* contactPicker:didSelectContactPropertys:]", name: "使用系统通讯录界面4", label: "获取通讯录权限", level: SENSITIVE, weight: "8"))
+}
+
+func HookPHAsset() {
+    USBDeviceManager.add(Hook(className: "PHAsset", methodName: "+ fetchAssetsInAssetCollection:options:", name: "读取照片1", label: "读取照片", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHAsset", methodName: "+ fetchAssetsWithLocalIdentifiers:options:", name: "读取照片2", label: "读取照片", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHAsset", methodName: "+ fetchKeyAssetsInAssetCollection:options:", name: "读取照片3", label: "读取照片", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHAsset", methodName: "+ fetchAssetsWithBurstIdentifier:options:", name: "读取照片4", label: "读取照片", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHAsset", methodName: "+ fetchAssetsWithOptions:", name: "读取照片5", label: "读取照片", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHAsset", methodName: "+ fetchAssetsWithMediaType:options:", name: "读取照片6", label: "读取照片", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHAsset", methodName: "+ fetchAssetsWithALAssetURLs:options:", name: "读取照片7", label: "读取照片", level: SENSITIVE, weight: "10"))
+}
+
+func HookPHAssetCollection() {
+    USBDeviceManager.add(Hook(className: "PHAssetCollection", methodName: "+ fetchAssetCollectionsWithLocalIdentifiers:options:", name: "读取相册1", label: "读取相册", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHAssetCollection", methodName: "+ fetchAssetCollectionsWithType:subtype:options:", name: "读取相册2", label: "读取相册", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHAssetCollection", methodName: "+ fetchAssetCollectionsContainingAsset:withType:options:", name: "读取相册3", label: "读取相册", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHAssetCollection", methodName: "+ fetchAssetCollectionsWithALAssetGroupURLs:options:", name: "读取相册4", label: "读取相册", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHAssetCollection", methodName: "+ fetchMomentsInMomentList:options:", name: "读取相册5", label: "读取相册", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHAssetCollection", methodName: "+ fetchMomentsWithOptions:", name: "读取相册6", label: "读取相册", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHAssetCollection", methodName: "+ transientAssetCollectionWithAssets:title:", name: "读取相册7", label: "读取相册", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHAssetCollection", methodName: "+ transientAssetCollectionWithAssetFetchResult:title:", name: "读取相册8", label: "读取相册", level: SENSITIVE, weight: "10"))
+}
+
+func HookPHCollectionList() {
+    USBDeviceManager.add(Hook(className: "PHCollectionList", methodName: "+ fetchCollectionListsContainingCollection:options:", name: "读取精选相册1", label: "读取精选相册", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHCollectionList", methodName: "+ fetchCollectionListsWithLocalIdentifiers:options:", name: "读取精选相册2", label: "读取精选相册", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHCollectionList", methodName: "+ fetchCollectionListsWithType:subtype:options:", name: "读取精选相册3", label: "读取精选相册", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHCollectionList", methodName: "+ fetchMomentListsWithSubtype:containingMoment:options:", name: "读取精选相册4", label: "读取精选相册", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHCollectionList", methodName: "+ fetchMomentListsWithSubtype:options:", name: "读取精选相册5", label: "读取精选相册", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHCollectionList", methodName: "+ transientCollectionListWithCollections:title:", name: "读取精选相册6", label: "读取精选相册", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHCollectionList", methodName: "+ transientCollectionListWithCollectionsFetchResult:title:", name: "读取精选相册7", label: "读取精选相册", level: SENSITIVE, weight: "10"))
+}
+
+func HookPHImageManager() {
+    USBDeviceManager.add(Hook(className: "PHImageManager", methodName: "+ requestImageForAsset:targetSize:contentMode:options:resultHandler:", name: "读取照片缩略图1", label: "读取照片缩略图", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHImageManager", methodName: "+ requestImageDataForAsset:options:resultHandler:", name: "读取照片缩略图2", label: "读取照片缩略图", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHImageManager", methodName: "+ requestImageDataAndOrientationForAsset:options:resultHandler:", name: "读取照片缩略图3", label: "读取照片缩略图", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHImageManager", methodName: "+ requestLivePhotoForAsset:targetSize:contentMode:options:resultHandler:", name: "读取实况照片", label: "读取实况照片", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHImageManager", methodName: "+ requestPlayerItemForVideo:options:resultHandler:", name: "读取视频1", label: "读取视频", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHImageManager", methodName: "+ requestExportSessionForVideo:options:exportPreset:resultHandler:", name: "读取视频2", label: "读取视频", level: SENSITIVE, weight: "10"))
+    USBDeviceManager.add(Hook(className: "PHImageManager", methodName: "+ requestAVAssetForVideo:options:resultHandler:", name: "读取视频3", label: "读取视频", level: SENSITIVE, weight: "10"))
+}
+
+func HookPHPhotoLibrary() {
+    USBDeviceManager.add(Hook(className: "PHPhotoLibrary", methodName: "+ authorizationStatusForAccessLevel:", name: "获取相册权限ASFA", label: "获取相册权限", level: SENSITIVE, weight: "8"))
+    USBDeviceManager.add(Hook(className: "PHPhotoLibrary", methodName: "+ authorizationStatus", name: "获取相册权限PHAS", label: "获取相册权限", level: SENSITIVE, weight: "8"))
+    USBDeviceManager.add(HookDelegate(methodName: "-[* photoLibraryDidChange:]", name: "读取相册变化", label: "读取相册变化", level: SENSITIVE, weight: "2"))
 }
