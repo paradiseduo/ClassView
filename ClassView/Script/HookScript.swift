@@ -8,7 +8,11 @@
 import Foundation
 import Frida
 
-class Hook: ScriptDelegate {
+protocol FridaHook {
+    func hook()
+}
+
+class Hook: ScriptDelegate, FridaHook {
     private var script: Script?
     let className: String
     let methodName: String
@@ -79,10 +83,10 @@ class Hook: ScriptDelegate {
 
             function hook_all_methods_of_specific_class(className_arg)
             {
-                setImmediate(run_hook_all_methods_of_specific_class,[className_arg])
+                setImmediate(run_hook_all_methods_of_specific_class,[className_arg]);
             }
 
-            hook_all_methods_of_specific_class("\(className)")
+            hook_all_methods_of_specific_class("\(className)");
             """
             if methodName.count > 0 {
                 s = """
@@ -101,7 +105,7 @@ class Hook: ScriptDelegate {
                     });
                 }
 
-                hook_specific_method_of_class("\(className)", "\(methodName)")
+                hook_specific_method_of_class("\(className)", "\(methodName)");
                 """
             }
             session.createScript(s, name: "Hook", runtime: ScriptRuntime.auto) { scriptResult in
@@ -129,7 +133,7 @@ class Hook: ScriptDelegate {
     }
 }
 
-class HookArgs: ScriptDelegate {
+class HookArgs: ScriptDelegate, FridaHook {
     public typealias HookResult = (_ className: String, _ methodName: String, _ callStack: String, _ background: String, _ args: [String]) -> Void
     
     private var script: Script?
@@ -203,10 +207,10 @@ class HookArgs: ScriptDelegate {
 
             function hook_all_methods_of_specific_class(className_arg)
             {
-                setImmediate(run_hook_all_methods_of_specific_class,[className_arg])
+                setImmediate(run_hook_all_methods_of_specific_class,[className_arg]);
             }
 
-            hook_all_methods_of_specific_class("\(className)")
+            hook_all_methods_of_specific_class("\(className)");
             """
             s = String(format: s, methodName)
             if methodName.count > 0 {
@@ -244,7 +248,7 @@ class HookArgs: ScriptDelegate {
                         });
                     }
 
-                    hook_specific_method_of_class("\(className)", "\(methodName)")
+                    hook_specific_method_of_class("\(className)", "\(methodName)");
                     """
                 } else if methodName == "- executeQuery:" && className == "HKHealthStore" {
                     s = """
@@ -265,7 +269,7 @@ class HookArgs: ScriptDelegate {
                         });
                     }
 
-                    hook_specific_method_of_class("\(className)", "\(methodName)")
+                    hook_specific_method_of_class("\(className)", "\(methodName)");
                     """
                 } else {
                     s = """
@@ -293,7 +297,7 @@ class HookArgs: ScriptDelegate {
                         });
                     }
 
-                    hook_specific_method_of_class("\(className)", "\(methodName)")
+                    hook_specific_method_of_class("\(className)", "\(methodName)");
                     """
                     s = String(format: s, methodName)
                 }
@@ -308,6 +312,92 @@ class HookArgs: ScriptDelegate {
                                 print("Script \(self.className) \(self.methodName) loaded")
                             } else {
                                 print("Script \(self.className) \(self.methodName) loaded failed")
+                            }
+                        } catch let e {
+                            print(e)
+                        }
+                    }
+                } catch let e {
+                    print(e)
+                }
+            }
+        } else {
+            print("USBDeviceManager.shared.session not found")
+        }
+    }
+}
+
+class HookDelegate: ScriptDelegate, FridaHook {
+    private var script: Script?
+    let methodName: String
+    let name: String
+    let label: String
+    let level: String
+    let weight: String
+    
+    init(methodName: String, name: String, label: String, level: String, weight: String) {
+        self.methodName = methodName
+        self.name = name
+        self.label = label
+        self.level = level
+        self.weight = weight
+    }
+
+    func scriptDestroyed(_ script: Script) {
+        print("\(script) scriptDestroyed")
+    }
+
+    func script(_ script: Script, didReceiveMessage message: Any, withData data: Data?) {
+        if let dic = message as? NSDictionary {
+            if let p = dic["payload"] as? String {
+                let arr = p.components(separatedBy: "&")
+                var background = "1"
+                if let b = arr.last, b == "0" {
+                    background = b
+                }
+                SendPermissionReport(name: name, label: label, level: level, weight: weight, stack: arr.first ?? "", background: background)
+            }
+        }
+    }
+    
+    func hook() {
+        if let session = USBDeviceManager.shared.session {
+//            const receiver = ObjC.Object(args[0]).$className;
+//            const selector = ObjC.selectorAsString(args[1]);
+//            const name = `- [${receiver} ${selector}]`;
+            let s = """
+                async function hook_delegate_method_of_class (methodName) {
+                  const resolver = new ApiResolver("objc");
+                  resolver.enumerateMatches( methodName, {
+                    onMatch: function (i) {
+                      Interceptor.attach(i.address, {
+                          onEnter(args) {
+                            ObjC.schedule(ObjC.mainQueue, function () {
+                                const { UIApplication } = ObjC.classes;
+                                var status = UIApplication.sharedApplication().applicationState();
+                                console.log(i.name.toString() + "&" + status);
+                            });
+                          }
+                      });
+                    },
+                    onComplete: function () {
+                        
+                    }
+                  });
+                }
+
+                hook_delegate_method_of_class( "\(methodName)" );
+            """
+            session.createScript(s, name: "HookDelegate", runtime: ScriptRuntime.auto) { scriptResult in
+                do {
+                    self.script = try scriptResult()
+                    self.script?.delegate = self
+                    self.script?.load() { result in
+                        do {
+                            if try result() {
+                                print("Script \(self.methodName) loaded")
+                            } else {
+                                print("Script \(self.methodName) loaded failed")
                             }
                         } catch let e {
                             print(e)

@@ -41,6 +41,7 @@ func StartHook() {
     HookUIDevice()
     HookUIImagePickerController()
     HookUIImpactFeedbackGenerator()
+    HookCNContactPickerViewController()
 }
 
 func HookUIPasteboard() {
@@ -321,4 +322,11 @@ func HookUIImagePickerController() {
 
 func HookUIImpactFeedbackGenerator() {
     USBDeviceManager.add(Hook(className: "UIImpactFeedbackGenerator", methodName: "- impactOccurred", name: "震动反馈", label: "震动反馈", level: GENERAL, weight: "100"))
+}
+
+func HookCNContactPickerViewController() {
+    USBDeviceManager.add(HookDelegate(methodName: "-[* contactPicker:didSelectContact:]", name: "使用系统通讯录界面1", label: "获取通讯录权限", level: SENSITIVE, weight: "8"))
+    USBDeviceManager.add(HookDelegate(methodName: "-[* contactPicker:didSelectContacts:]", name: "使用系统通讯录界面2", label: "获取通讯录权限", level: SENSITIVE, weight: "8"))
+    USBDeviceManager.add(HookDelegate(methodName: "-[* contactPicker:didSelectContactProperty:]", name: "使用系统通讯录界面3", label: "获取通讯录权限", level: SENSITIVE, weight: "8"))
+    USBDeviceManager.add(HookDelegate(methodName: "-[* contactPicker:didSelectContactPropertys:]", name: "使用系统通讯录界面4", label: "获取通讯录权限", level: SENSITIVE, weight: "8"))
 }

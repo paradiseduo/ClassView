@@ -14,8 +14,7 @@ class USBDeviceManager: SessionDelegate {
     private let manager = DeviceManager()
     var device: Device?
     var session: Session?
-    private var hooks: [Hook] = []
-    private var hookReturns: [HookArgs] = []
+    private var hookArray: [FridaHook] = []
     var pid: UInt = 0
     
     func deviceManager() -> DeviceManager {
@@ -86,13 +85,8 @@ class USBDeviceManager: SessionDelegate {
         }
     }
     
-    static func add(_ hook: Hook) {
+    static func add(_ hook: FridaHook) {
         hook.hook()
-        USBDeviceManager.shared.hooks.append(hook)
-    }
-    
-    static func add(_ hook: HookArgs) {
-        hook.hook()
-        USBDeviceManager.shared.hookReturns.append(hook)
+        USBDeviceManager.shared.hookArray.append(hook)
     }
 }
