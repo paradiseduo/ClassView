@@ -54,47 +54,42 @@ class Hook: ScriptDelegate, FridaHook {
 //            dic.setObject_forKey_(method_name.toString(), "methodName");
 //            dic.setObject_forKey_(ObjC.classes.NSThread['+ callStackSymbols']().toString(), "stack");
             var s = """
-            function hook_class_method(class_name, method_name)
-            {
+            function hook_class_method(class_name, method_name) {
                 var hook = ObjC.classes[class_name][method_name];
                 Interceptor.attach(hook.implementation, {
-                    onEnter: function(args) {
-                       var stack = ObjC.classes.NSThread['+ callStackSymbols']().toString();
-                       ObjC.schedule(ObjC.mainQueue, function () {
-                           const { UIApplication } = ObjC.classes;
-                           var status = UIApplication.sharedApplication().applicationState();
-                           console.log(stack + "&" + status);
-                       });
+                    onEnter: function (args) {
+                        var stack = ObjC.classes.NSThread['+ callStackSymbols']().toString();
+                        ObjC.schedule(ObjC.mainQueue, function () {
+                            const { UIApplication } = ObjC.classes;
+                            var status = UIApplication.sharedApplication().applicationState();
+                            console.log(stack + "&" + status);
+                        });
                     }
                 });
             }
 
-            function run_hook_all_methods_of_specific_class(className_arg)
-            {
+            function run_hook_all_methods_of_specific_class(className_arg) {
                 var className = className_arg;
                 var methods = ObjC.classes[className].$ownMethods;
-                for (var i = 0; i < methods.length; i++)
-                {
+                for (var i = 0; i < methods.length; i++) {
                     var className2 = className;
                     var funcName2 = methods[i];
                     hook_class_method(className2, funcName2);
                 }
             }
 
-            function hook_all_methods_of_specific_class(className_arg)
-            {
-                setImmediate(run_hook_all_methods_of_specific_class,[className_arg]);
+            function hook_all_methods_of_specific_class(className_arg) {
+                setImmediate(run_hook_all_methods_of_specific_class, [className_arg]);
             }
 
             hook_all_methods_of_specific_class("\(className)");
             """
             if methodName.count > 0 {
                 s = """
-                function hook_specific_method_of_class(class_name, method_name)
-                {
+                function hook_specific_method_of_class(class_name, method_name) {
                     var hook = ObjC.classes[class_name][method_name];
                     Interceptor.attach(hook.implementation, {
-                        onEnter: function(args) {
+                        onEnter: function (args) {
                             var stack = ObjC.classes.NSThread['+ callStackSymbols']().toString();
                             ObjC.schedule(ObjC.mainQueue, function () {
                                 const { UIApplication } = ObjC.classes;
@@ -169,19 +164,17 @@ class HookArgs: ScriptDelegate, FridaHook {
     func hook() {
         if let session = USBDeviceManager.shared.session {
             var s = """
-            function hook_class_method(class_name, method_name)
-            {
+            function hook_class_method(class_name, method_name) {
                 var hook = ObjC.classes[class_name][method_name];
                 Interceptor.attach(hook.implementation, {
-                    onEnter: function(args) {
+                    onEnter: function (args) {
                         const { NSString } = ObjC.classes;
                         var str = NSString.stringWithString_("%@");
                         var array = str["- componentsSeparatedByString:"](":");
                         var count = array.count().valueOf();
                         var result = "&";
-                        for (var i = 0; i < count-1; i++)
-                        {
-                            result = result + "*" + ObjC.Object(args[2+i]).toString();
+                        for (var i = 0; i < count - 1; i++) {
+                            result = result + "*" + ObjC.Object(args[2 + i]).toString();
                         }
                         var stack = ObjC.classes.NSThread['+ callStackSymbols']().toString();
                         ObjC.schedule(ObjC.mainQueue, function () {
@@ -193,21 +186,18 @@ class HookArgs: ScriptDelegate, FridaHook {
                 });
             }
 
-            function run_hook_all_methods_of_specific_class(className_arg)
-            {
+            function run_hook_all_methods_of_specific_class(className_arg) {
                 var className = className_arg;
                 var methods = ObjC.classes[className].$ownMethods;
-                for (var i = 0; i < methods.length; i++)
-                {
+                for (var i = 0; i < methods.length; i++) {
                     var className2 = className;
                     var funcName2 = methods[i];
                     hook_class_method(className2, funcName2);
                 }
             }
 
-            function hook_all_methods_of_specific_class(className_arg)
-            {
-                setImmediate(run_hook_all_methods_of_specific_class,[className_arg]);
+            function hook_all_methods_of_specific_class(className_arg) {
+                setImmediate(run_hook_all_methods_of_specific_class, [className_arg]);
             }
 
             hook_all_methods_of_specific_class("\(className)");
@@ -216,30 +206,27 @@ class HookArgs: ScriptDelegate, FridaHook {
             if methodName.count > 0 {
                 if methodName == "- requestAuthorizationToShareTypes:readTypes:completion:" && className == "HKHealthStore" {
                     s = """
-                    function hook_specific_method_of_class(class_name, method_name)
-                    {
+                    function hook_specific_method_of_class(class_name, method_name) {
                         var hook = ObjC.classes[class_name][method_name];
                         Interceptor.attach(hook.implementation, {
-                            onEnter: function(args) {
+                            onEnter: function (args) {
                                 const { UIApplication } = ObjC.classes;
                                 var status = UIApplication.sharedApplication().applicationState();
                                 var stack = ObjC.classes.NSThread['+ callStackSymbols']().toString();
-                                
+
                                 var shareSet = new ObjC.Object(args[2]);
                                 var shareArr = shareSet.allObjects();
                                 var count1 = shareArr.count().valueOf();
-                                for (var i = 0; i < count1; i++)
-                                {
+                                for (var i = 0; i < count1; i++) {
                                     var str = ObjC.Object(shareArr.objectAtIndex_(i));
                                     var str1 = str.identifier()["- stringByReplacingOccurrencesOfString:withString:"]("HKQuantityTypeIdentifier", "");
                                     console.log(stack + "&" + status + "&" + "Share " + str1);
                                 }
-                                
+
                                 var readSet = new ObjC.Object(args[3]);
                                 var readArr = readSet.allObjects();
                                 var count2 = readArr.count().valueOf();
-                                for (var i = 0; i < count2; i++)
-                                {
+                                for (var i = 0; i < count2; i++) {
                                     var str = ObjC.Object(readArr.objectAtIndex_(i));
                                     var str1 = str.identifier()["- stringByReplacingOccurrencesOfString:withString:"]("HKQuantityTypeIdentifier", "");
                                     console.log(stack + "&" + status + "&" + "Read " + str1);
@@ -252,11 +239,10 @@ class HookArgs: ScriptDelegate, FridaHook {
                     """
                 } else if methodName == "- executeQuery:" && className == "HKHealthStore" {
                     s = """
-                    function hook_specific_method_of_class(class_name, method_name)
-                    {
+                    function hook_specific_method_of_class(class_name, method_name) {
                         var hook = ObjC.classes[class_name][method_name];
                         Interceptor.attach(hook.implementation, {
-                            onEnter: function(args) {
+                            onEnter: function (args) {
                                 var stack = ObjC.classes.NSThread['+ callStackSymbols']().toString();
                                 var query = new ObjC.Object(args[2]);
                                 ObjC.schedule(ObjC.mainQueue, function () {
@@ -273,19 +259,17 @@ class HookArgs: ScriptDelegate, FridaHook {
                     """
                 } else {
                     s = """
-                    function hook_specific_method_of_class(class_name, method_name)
-                    {
+                    function hook_specific_method_of_class(class_name, method_name) {
                         var hook = ObjC.classes[class_name][method_name];
                         Interceptor.attach(hook.implementation, {
-                            onEnter: function(args) {
+                            onEnter: function (args) {
                                 const { NSString } = ObjC.classes;
                                 var str = NSString.stringWithString_("%@");
                                 var array = str["- componentsSeparatedByString:"](":");
                                 var count = array.count().valueOf();
                                 var result = "&";
-                                for (var i = 0; i < count-1; i++)
-                                {
-                                    result = result + "*" + ObjC.Object(args[2+i]).toString();
+                                for (var i = 0; i < count - 1; i++) {
+                                    result = result + "*" + ObjC.Object(args[2 + i]).toString();
                                 }
                                 var stack = ObjC.classes.NSThread['+ callStackSymbols']().toString();
                                 ObjC.schedule(ObjC.mainQueue, function () {
@@ -366,27 +350,27 @@ class HookDelegate: ScriptDelegate, FridaHook {
 //            const selector = ObjC.selectorAsString(args[1]);
 //            const name = `- [${receiver} ${selector}]`;
             let s = """
-                async function hook_delegate_method_of_class (methodName) {
-                  const resolver = new ApiResolver("objc");
-                  resolver.enumerateMatches( methodName, {
+            async function hook_delegate_method_of_class(methodName) {
+                const resolver = new ApiResolver("objc");
+                resolver.enumerateMatches(methodName, {
                     onMatch: function (i) {
-                      Interceptor.attach(i.address, {
-                          onEnter(args) {
-                            ObjC.schedule(ObjC.mainQueue, function () {
-                                const { UIApplication } = ObjC.classes;
-                                var status = UIApplication.sharedApplication().applicationState();
-                                console.log(i.name.toString() + "&" + status);
-                            });
-                          }
-                      });
+                        Interceptor.attach(i.address, {
+                            onEnter(args) {
+                                ObjC.schedule(ObjC.mainQueue, function () {
+                                    const { UIApplication } = ObjC.classes;
+                                    var status = UIApplication.sharedApplication().applicationState();
+                                    console.log(i.name.toString() + "&" + status);
+                                });
+                            }
+                        });
                     },
                     onComplete: function () {
-                        
-                    }
-                  });
-                }
 
-                hook_delegate_method_of_class( "\(methodName)" );
+                    }
+                });
+            }
+
+            hook_delegate_method_of_class("\(methodName)");
             """
             session.createScript(s, name: "HookDelegate", runtime: ScriptRuntime.auto) { scriptResult in
                 do {
@@ -398,6 +382,93 @@ class HookDelegate: ScriptDelegate, FridaHook {
                                 print("Script \(self.methodName) loaded")
                             } else {
                                 print("Script \(self.methodName) loaded failed")
+                            }
+                        } catch let e {
+                            print(e)
+                        }
+                    }
+                } catch let e {
+                    print(e)
+                }
+            }
+        } else {
+            print("USBDeviceManager.shared.session not found")
+        }
+    }
+}
+
+
+class HookRequest: ScriptDelegate, FridaHook {
+    private var script: Script?
+
+    func scriptDestroyed(_ script: Script) {
+        print("\(script) scriptDestroyed")
+    }
+
+    func script(_ script: Script, didReceiveMessage message: Any, withData data: Data?) {
+        if let dic = message as? NSDictionary {
+            if let p = dic["payload"] as? String {
+                let arr = p.components(separatedBy: "ƒ")
+                let url = arr[0]
+                let header = ((arr[1] == "null") ? "" : arr[1])
+                let method = arr[2]
+                let body = arr[3]
+                SendRequestReport(url: url, header: header, method: method, body: body)
+            }
+        }
+    }
+    
+    func hook() {
+        if let session = USBDeviceManager.shared.session {
+            let s = """
+            function format(value) {
+                const receiver = ObjC.Object(value);
+                const request = receiver.originalRequest();
+                const NSString = ObjC.classes.NSString;
+                var body = request.HTTPBody().base64EncodedStringWithOptions_(0);
+                console.log(request.URL() + "ƒ" + request.allHTTPHeaderFields() + "ƒ" + request.HTTPMethod() + "ƒ" + body);
+            }
+
+            async function hook_request() {
+                const resolver = new ApiResolver("objc");
+                resolver.enumerateMatches("-[NSURLSessionTask resume]", {
+                    onMatch: function (i) {
+                        Interceptor.attach(i.address, {
+                            onEnter(args) {
+                                format(args[0]);
+                            }
+                        });
+                    },
+                    onComplete: function () {
+
+                    }
+                });
+                resolver.enumerateMatches("-[NSURLConnection start]", {
+                    onMatch: function (i) {
+                        Interceptor.attach(i.address, {
+                            onEnter(args) {
+                                format(args[0]);
+                            }
+                        });
+                    },
+                    onComplete: function () {
+
+                    }
+                });
+            }
+
+            hook_request();
+            """
+            session.createScript(s, name: "HookRequest", runtime: ScriptRuntime.auto) { scriptResult in
+                do {
+                    self.script = try scriptResult()
+                    self.script?.delegate = self
+                    self.script?.load() { result in
+                        do {
+                            if try result() {
+                                print("Script HookRequest loaded")
+                            } else {
+                                print("Script HookRequest loaded failed")
                             }
                         } catch let e {
                             print(e)

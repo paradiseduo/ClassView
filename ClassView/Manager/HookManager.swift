@@ -47,6 +47,7 @@ func StartHook() {
     HookPHCollectionList()
     HookPHImageManager()
     HookPHPhotoLibrary()
+    USBDeviceManager.add(HookRequest())
 }
 
 func HookUIPasteboard() {

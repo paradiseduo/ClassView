@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		84379BF328BF320100767D4C /* CheckManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84379BF228BF320100767D4C /* CheckManager.swift */; };
 		844B545B28A2852300539C02 /* AppDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844B545A28A2852300539C02 /* AppDataManager.swift */; };
 		845D076A288FDFB800205CA1 /* Frida.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 845D0768288FDFB500205CA1 /* Frida.framework */; };
 		845D076B288FDFB800205CA1 /* Frida.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 845D0768288FDFB500205CA1 /* Frida.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -43,6 +44,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		84379BF228BF320100767D4C /* CheckManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckManager.swift; sourceTree = "<group>"; };
 		844B545A28A2852300539C02 /* AppDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDataManager.swift; sourceTree = "<group>"; };
 		845D0768288FDFB500205CA1 /* Frida.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Frida.framework; sourceTree = "<group>"; };
 		845D076C28910DAC00205CA1 /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 				84D9225D2897E784007A51D8 /* RequestManager.swift */,
 				845D076E28910E6600205CA1 /* USBDeviceManager.swift */,
 				844B545A28A2852300539C02 /* AppDataManager.swift */,
+				84379BF228BF320100767D4C /* CheckManager.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -228,6 +231,7 @@
 				845D07772893DB2500205CA1 /* MethoedScript.swift in Sources */,
 				845D076F28910E6600205CA1 /* USBDeviceManager.swift in Sources */,
 				84D9225E2897E784007A51D8 /* RequestManager.swift in Sources */,
+				84379BF328BF320100767D4C /* CheckManager.swift in Sources */,
 				84D9225A2897A5AD007A51D8 /* HookScript.swift in Sources */,
 				84D922622897FC74007A51D8 /* ApplicationInfoScript.swift in Sources */,
 				84D9225C2897E6AB007A51D8 /* HookManager.swift in Sources */,

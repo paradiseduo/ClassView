@@ -7,57 +7,26 @@
 
 import Foundation
 
-let LocalAddress = ""
-let TestAddress = ""
-let ReleaseAddress = ""
-
-let Address = LocalAddress
-
-func Body(name: String, label: String, level: String, weight: String, stack: String) -> [String: String] {
-    var body = ["name": name, "label": label, "level": level, "weight": weight]
-    if stack.hasPrefix("(") {
-        let arr = stack.components(separatedBy: "\n").dropFirst().dropLast()
-        var resultStack = ""
-        for (index, item) in arr.enumerated() {
-            if item.contains("???") {
-                continue
-            }
-            let s = item.components(separatedBy: "0x")
-            if let ss = s.last {
-                let subString = String(ss[ss.index(ss.startIndex, offsetBy: 17)..<ss.endIndex])
-    //            let funcName = subString.components(separatedBy: " + ").first!
-    //            if let c = swift_demangle(funcName) {
-    //                print(c)
-    //            }
-                if subString.count > 36 {
-                    if let _ = UUID(uuidString: subString[..<36]) {
-                        continue
-                    }
-                }
-                resultStack += "\(index) \(subString)\n"
-                if body["abstract"] == nil {
-                    body["abstract"] = subString
-                }
-            } else {
-                continue
-            }
-        }
-        body["stack"] = resultStack
-    } else if stack.hasPrefix("-") {
-        body["stack"] = stack
-        body["abstract"] = stack
-    }
-    return body
-}
-
 func SendPermissionReport(name: String, label: String, level: String, weight: String, stack: String, background: String) {
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-    var body = Body(name: name, label: label, level: level, weight: weight, stack: stack)
+    var body = PermissionCheck(name: name, label: label, level: level, weight: weight, stack: stack)
     body["calldate"] = dateFormatter.string(from: Date())
     body["udid"] = AppDataManager.shared.udid
     body["background"] = background
     
+    print(body)
+}
+
+func SendRequestReport(url: String, header: String, method: String, body: String) {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+    var body = RequestCheck(url: url, header: header, method: method, body: body)
+    body["calldate"] = dateFormatter.string(from: Date())
+    body["udid"] = AppDataManager.shared.udid
+    body["version"] = AppDataManager.shared.version
+    body["app"] = AppDataManager.shared.appName
+    body["build"] = AppDataManager.shared.build
     print(body)
 }
 
