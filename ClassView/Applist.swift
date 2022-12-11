@@ -48,6 +48,15 @@ struct Applist: View {
 //                            })
                             application.application()
                             StartHook()
+                            let sw = NewWindowController(rootView: MessageDetailView(model: RequestManager.shared.permissions))
+                            sw.window?.title = "堆栈详情"
+                            sw.showWindow(nil)
+                            let rw = NewWindowController(rootView: MessageDetailView(model: RequestManager.shared.requests))
+                            rw.window?.title = "请求详情"
+                            rw.showWindow(nil)
+                            let nw = NewWindowController(rootView: ImageDetailView(messages: [String]()))
+                            nw.window?.title = "图片详情"
+                            nw.showWindow(nil)
                         }
                     }
             }

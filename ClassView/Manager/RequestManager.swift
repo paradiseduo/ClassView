@@ -7,6 +7,13 @@
 
 import Foundation
 
+class RequestManager {
+    static let shared = RequestManager()
+    
+    var permissions = MessageModel(messages: [Message]())
+    var requests = MessageModel(messages: [Message]())
+}
+
 func SendPermissionReport(name: String, label: String, level: String, weight: String, stack: String, background: String) {
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
@@ -15,7 +22,11 @@ func SendPermissionReport(name: String, label: String, level: String, weight: St
     body["udid"] = AppDataManager.shared.udid
     body["background"] = background
     
-    print(body)
+    if body["level"] == SENSITIVE {
+        if let jsonData = try? JSONSerialization.data(withJSONObject: body, options: .prettyPrinted), let s = String(data: jsonData, encoding: String.Encoding.utf8) {
+            RequestManager.shared.permissions.messages.append(Message(id: RequestManager.shared.permissions.messages.count, message: s))
+        }
+    }
 }
 
 func SendRequestReport(url: String, header: String, method: String, body: String) {
@@ -27,7 +38,11 @@ func SendRequestReport(url: String, header: String, method: String, body: String
     body["version"] = AppDataManager.shared.version
     body["app"] = AppDataManager.shared.appName
     body["build"] = AppDataManager.shared.build
-    print(body)
+    if body["level"] == SENSITIVE {
+        if let jsonData = try? JSONSerialization.data(withJSONObject: body, options: .prettyPrinted), let s = String(data: jsonData, encoding: String.Encoding.utf8) {
+            RequestManager.shared.requests.messages.append(Message(id: RequestManager.shared.requests.messages.count, message: s))
+        }
+    }
 }
 
 func SendDeviceInfo() {
