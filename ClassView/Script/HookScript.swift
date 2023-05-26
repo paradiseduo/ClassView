@@ -430,7 +430,6 @@ class HookRequest: ScriptDelegate, FridaHook {
                 if ( request.HTTPBody() !== null) {
                     body = request.HTTPBody().base64EncodedStringWithOptions_(0);
                 }
-                var stack = ObjC.classes.NSThread['+ callStackSymbols']().toString();
                 ObjC.schedule(ObjC.mainQueue, function () {
                     const { UIApplication } = ObjC.classes;
                     var status = UIApplication.sharedApplication().applicationState();
