@@ -413,6 +413,7 @@ class HookRequest: ScriptDelegate, FridaHook {
                 let header = ((arr[1] == "null") ? "" : arr[1])
                 let method = arr[2]
                 let body = arr[3]
+                let background = arr[4]
                 SendRequestReport(url: url, header: header, method: method, body: body)
             }
         }
@@ -425,8 +426,16 @@ class HookRequest: ScriptDelegate, FridaHook {
                 const receiver = ObjC.Object(value);
                 const request = receiver.originalRequest();
                 const NSString = ObjC.classes.NSString;
-                var body = request.HTTPBody().base64EncodedStringWithOptions_(0);
-                console.log(request.URL() + "ƒ" + request.allHTTPHeaderFields() + "ƒ" + request.HTTPMethod() + "ƒ" + body);
+                var body = "";
+                if ( request.HTTPBody() !== null) {
+                    body = request.HTTPBody().base64EncodedStringWithOptions_(0);
+                }
+                var stack = ObjC.classes.NSThread['+ callStackSymbols']().toString();
+                ObjC.schedule(ObjC.mainQueue, function () {
+                    const { UIApplication } = ObjC.classes;
+                    var status = UIApplication.sharedApplication().applicationState();
+                    console.log(request.URL() + "ƒ" + request.allHTTPHeaderFields() + "ƒ" + request.HTTPMethod() + "ƒ" + body + "ƒ" + status);
+                });
             }
 
             async function hook_request() {
