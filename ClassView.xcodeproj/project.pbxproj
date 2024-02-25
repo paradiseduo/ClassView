@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		843109B52B3DA23E00130D67 /* FridaSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 843109B32B3DA23A00130D67 /* FridaSwift.framework */; };
+		843109B62B3DA23E00130D67 /* FridaSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 843109B32B3DA23A00130D67 /* FridaSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		84379BF328BF320100767D4C /* CheckManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84379BF228BF320100767D4C /* CheckManager.swift */; };
 		844B545B28A2852300539C02 /* AppDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844B545A28A2852300539C02 /* AppDataManager.swift */; };
 		845D076A288FDFB800205CA1 /* Frida.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 845D0768288FDFB500205CA1 /* Frida.framework */; };
@@ -39,6 +41,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				845D076B288FDFB800205CA1 /* Frida.framework in Embed Frameworks */,
+				843109B62B3DA23E00130D67 /* FridaSwift.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -46,6 +49,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		843109B32B3DA23A00130D67 /* FridaSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FridaSwift.framework; sourceTree = "<group>"; };
 		84379BF228BF320100767D4C /* CheckManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckManager.swift; sourceTree = "<group>"; };
 		844B545A28A2852300539C02 /* AppDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDataManager.swift; sourceTree = "<group>"; };
 		845D0768288FDFB500205CA1 /* Frida.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Frida.framework; sourceTree = "<group>"; };
@@ -77,6 +81,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				845D076A288FDFB800205CA1 /* Frida.framework in Frameworks */,
+				843109B52B3DA23E00130D67 /* FridaSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,6 +111,7 @@
 				84D922642897FCA4007A51D8 /* Manager */,
 				84D922632897FC8E007A51D8 /* Script */,
 				847849FC27BE8109005643A7 /* ClassView.entitlements */,
+				843109B32B3DA23A00130D67 /* FridaSwift.framework */,
 				845D0768288FDFB500205CA1 /* Frida.framework */,
 				845D076C28910DAC00205CA1 /* Application.swift */,
 				845D077028911E6800205CA1 /* Applist.swift */,
@@ -398,7 +404,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/ClassView",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"-lbsm",
@@ -440,7 +446,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/ClassView",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"-lbsm",

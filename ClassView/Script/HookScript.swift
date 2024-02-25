@@ -6,7 +6,8 @@
 //
 
 import Foundation
-import Frida
+import FridaSwift
+import Cocoa
 
 protocol FridaHook {
     func hook()

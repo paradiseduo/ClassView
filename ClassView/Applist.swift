@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftUI
-import Frida
+import FridaSwift
 
 struct AppRow: View {
     var app: Applicaiton

@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import Frida
+import FridaSwift
 
 struct ContentView: View {
     @State var applications: [Applicaiton]

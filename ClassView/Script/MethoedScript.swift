@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Frida
+import FridaSwift
 
 class Method : ScriptDelegate {
     private var script: Script?

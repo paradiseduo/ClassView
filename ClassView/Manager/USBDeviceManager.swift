@@ -6,7 +6,8 @@
 //
 
 import Foundation
-import Frida
+import FridaSwift
+import Cocoa
 
 class USBDeviceManager: SessionDelegate {
     
